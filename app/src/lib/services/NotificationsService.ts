@@ -1,0 +1,71 @@
+import {Database, GCSWrapper, Log, Organization} from "markly-ts-core";
+import { SendGridService } from "./SendgridService.js";
+import {CommunicationChannel} from "markly-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
+import type {
+  NotificationDataMessage,
+  NotifyReportReadyMessage
+} from "markly-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
+
+const logger: Log = Log.getInstance().extend("notifications-util");
+const database = await Database.getInstance();
+
+export class NotificationsService {
+  private static readonly sendGrid: SendGridService = new SendGridService("support@marklie.com");
+
+  public static async sendReportToClients(
+    data: NotificationDataMessage
+  ): Promise<void> {
+    const communicationChannels = await database.em.find(
+        CommunicationChannel,
+        {
+          client: data.clientUuid,
+          active: true,
+        },
+    );
+
+    for (const channel of communicationChannels) {
+      try {
+        await channel.send({});
+      } catch (err) {
+        logger.error(
+            `Failed to send report via channel ${channel.uuid}:`,
+            err,
+        );
+      }
+    }
+  }
+
+  public static async sendReportIsReadyEmails(
+      data: NotifyReportReadyMessage
+  ): Promise<void> {
+    const organization = await database.em.findOne(
+        Organization,
+        { uuid: data.organizationUuid },
+        {
+          populate: ["members.user"],
+        },
+    );
+    const gcsService = GCSWrapper.getInstance("marklie-client-reports")
+    const report = await gcsService.getReport(data.reportUrl);
+
+    if (!organization) {
+      logger.error(`Organization with UUID ${data.organizationUuid} not found.`);
+      return;
+    }
+
+    const members = organization.members.getItems();
+
+    for (const member of members) {
+      const user = member.user;
+      try {
+        await this.sendGrid.sendReportEmail({
+          to: user.email,
+          subject: `Report for client is ready!`,
+          text: 'Please review the report <3',
+        }, report )
+      } catch (err) {
+        logger.error(`Failed to notify user ${user.email}:`, err);
+      }
+    }
+  }
+}

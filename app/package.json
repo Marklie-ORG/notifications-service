@@ -17,20 +17,16 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
-    "ioredis": "^5.4.2",
     "markly-ts-core": "1.1.3",
-    "pdfkit": "^0.17.0"
   },
   "devDependencies": {
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
-    "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/koa": "^2.13.5",
     "@types/koa-bodyparser": "^4.3.12",
     "@types/koa-router": "^7.4.4",
     "@types/node": "^22.10.10",
-    "bcrypt": "^5.1.1",
     "koa": "^2.13.4",
     "koa-body": "^6.0.1",
     "koa-bodyparser": "^4.3.0",

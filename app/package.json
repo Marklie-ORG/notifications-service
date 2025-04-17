@@ -16,8 +16,6 @@
     "start:dev": "npm run watch"
   },
   "dependencies": {
-    "@google-cloud/pubsub": "^4.11.0",
-    "@google-cloud/storage": "^7.16.0",
     "@sendgrid/mail": "^8.1.5",
     "ioredis": "^5.4.2",
     "markly-ts-core": "1.1.3",

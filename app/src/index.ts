@@ -9,7 +9,7 @@ import {
   Log,
   PubSubWrapper,
   ValidationMiddleware
-} from "markly-ts-core";
+} from "marklie-ts-core";
 import {NotificationsService} from "./lib/services/NotificationsService.js";
 import type {
   NotificationDataMessage,

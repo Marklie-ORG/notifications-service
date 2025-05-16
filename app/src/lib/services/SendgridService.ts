@@ -1,6 +1,6 @@
 import sgMail, { type MailDataRequired } from "@sendgrid/mail";
-import {Log} from "markly-ts-core";
-import type {SendEmailOptions} from "markly-ts-core/dist/lib/interfaces/MailInterfaces.js";
+import {Log} from "marklie-ts-core";
+import type {SendEmailOptions} from "marklie-ts-core/dist/lib/interfaces/MailInterfaces.js";
 
 const logger: Log = Log.getInstance().extend("service");
 

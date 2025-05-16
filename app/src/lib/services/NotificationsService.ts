@@ -1,11 +1,11 @@
-import {Database, GCSWrapper, Log, Organization} from "markly-ts-core";
 import { SendGridService } from "./SendgridService.js";
-import {CommunicationChannel} from "markly-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
+
 import type {
   NotificationDataMessage,
-  NotifyReportReadyMessage
-} from "markly-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
-import type { NotifyChangeEmailMessage } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
+  NotifyChangeEmailMessage, NotifyReportReadyMessage
+} from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
+import {Database, GCSWrapper, Log, Organization} from "marklie-ts-core";
+import {CommunicationChannel} from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
 
 const logger: Log = Log.getInstance().extend("notifications-util");
 const database = await Database.getInstance();

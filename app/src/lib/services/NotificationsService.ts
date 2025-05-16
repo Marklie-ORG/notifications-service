@@ -17,14 +17,24 @@ export class NotificationsService {
     data: NotificationDataMessage
   ): Promise<void> {
 
-    const gcsService = GCSWrapper.getInstance("marklie-client-reports")
-    const report = await gcsService.getReport(data.reportUrl);
+    const communicationChannels = await database.em.find(
+      CommunicationChannel,
+      {
+        client: data.clientUuid,
+        active: true,
+      },
+    );
 
-    await this.sendGrid.sendReportEmail({
-      to: "derevyanko.andrew2004@gmail.com",
-      subject: `Report for client is ready!`,
-      text: 'Please review the report <3',
-    }, report )
+    for (const channel of communicationChannels) {
+      try {
+        await channel.send({});
+      } catch (err) {
+        logger.error(
+            `Failed to send report via channel ${channel.uuid}:`,
+            err,
+        );
+      }
+    }
   }
 
   public static async sendReportIsReadyEmails(

@@ -5,6 +5,7 @@ import type {
   NotificationDataMessage,
   NotifyReportReadyMessage
 } from "markly-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
+import type { NotifyChangeEmailMessage } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 
 const logger: Log = Log.getInstance().extend("notifications-util");
 const database = await Database.getInstance();
@@ -15,12 +16,13 @@ export class NotificationsService {
   public static async sendReportToClients(
     data: NotificationDataMessage
   ): Promise<void> {
+
     const communicationChannels = await database.em.find(
-        CommunicationChannel,
-        {
-          client: data.clientUuid,
-          active: true,
-        },
+      CommunicationChannel,
+      {
+        client: data.clientUuid,
+        active: true,
+      },
     );
 
     for (const channel of communicationChannels) {
@@ -68,4 +70,21 @@ export class NotificationsService {
       }
     }
   }
+
+  public static async sendChangeEmailEmail(
+    data: NotifyChangeEmailMessage
+  ): Promise<void> {
+    
+    try {
+      await this.sendGrid.sendEmail({
+        to: data.email,
+        subject: `Marklie | Email Confirmation`,
+        text: `Please confirm your email change: http://localhost:4200/verify-email-change?token=${data.token}`,
+      })
+    } catch (err) {
+      logger.error(`Failed to notify user ${data.email}:`, err);
+    }
+
+  }
+
 }

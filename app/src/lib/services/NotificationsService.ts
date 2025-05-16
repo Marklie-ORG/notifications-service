@@ -2,7 +2,9 @@ import { SendGridService } from "./SendgridService.js";
 
 import type {
   NotificationDataMessage,
-  NotifyChangeEmailMessage, NotifyReportReadyMessage
+  NotifyChangeEmailMessage, 
+  NotifyReportReadyMessage,
+  NotifyPasswordRecoveryMessage
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 import {Database, GCSWrapper, Log, Organization} from "marklie-ts-core";
 import {CommunicationChannel} from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
@@ -86,5 +88,22 @@ export class NotificationsService {
     }
 
   }
+
+  public static async sendPasswordRecoveryEmail(
+    data: NotifyPasswordRecoveryMessage
+  ): Promise<void> {
+    
+    try {
+      await this.sendGrid.sendEmail({
+        to: data.email,
+        subject: `Marklie | Password Recovery`,
+        text: `Recover password: http://localhost:4200/password-recovery?token=${data.token}`,
+      })
+    } catch (err) {
+      logger.error(`Failed to notify user ${data.email}:`, err);
+    }
+
+  }
+  
 
 }

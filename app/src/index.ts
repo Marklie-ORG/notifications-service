@@ -14,7 +14,8 @@ import {NotificationsService} from "./lib/services/NotificationsService.js";
 import type {
   NotificationDataMessage,
   NotifyReportReadyMessage,
-  NotifyChangeEmailMessage
+  NotifyChangeEmailMessage,
+  NotifyPasswordRecoveryMessage
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 
 const app = new Koa();
@@ -43,6 +44,12 @@ PubSubWrapper.subscribe<NotifyChangeEmailMessage>("notification-send-change-emai
   logger.info(`Received message to topic notification-send-change-email-sub-sub`);
 
   await NotificationsService.sendChangeEmailEmail(data)
+})
+
+PubSubWrapper.subscribe<NotifyPasswordRecoveryMessage>("notification-send-password-recovery-email-sub", async (data: NotifyPasswordRecoveryMessage)=> {
+  logger.info(`Received message to topic notification-send-password-recovery-email-sub`);
+
+  await NotificationsService.sendPasswordRecoveryEmail(data)
 })
 
 app.use(koabodyparser());

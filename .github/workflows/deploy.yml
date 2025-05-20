@@ -1,0 +1,66 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: saas-452909
+  REGION: europe-west4
+  REGISTRY: europe-west4-docker.pkg.dev
+  IMAGE_NAME: notification-service
+  SERVICE_NAME: notification-service
+  IMAGE_REPO: europe-west4-docker.pkg.dev/saas-452909/notification-service
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_IDENTITY_PROVIDER }}
+          service_account: 'github-deployer@saas-452909.iam.gserviceaccount.com'
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGISTRY }}
+
+      - name: Who am I?
+        run: gcloud auth list
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -f ./docker/Dockerfile \
+            -t ${{ env.IMAGE_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Push image to Artifact Registry
+        run: docker push ${{ env.IMAGE_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          image: ${{ env.IMAGE_REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          region: ${{ env.REGION }}
+          env_vars: |
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            ENVIRONMENT=production
+            ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}
+            REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}
+            GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
+            ORG_TOKEN_SECRET_KEY=${{ secrets.ORG_TOKEN_SECRET_KEY }}
+      - name: Output service URL
+        run: echo "✅ Deployed to ${{ steps.deploy.outputs.url }}"

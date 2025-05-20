@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
-    "marklie-ts-core": "1.2.0"
+    "marklie-ts-core": "1.2.2"
   },
   "devDependencies": {
     "@swc/cli": "^0.6.0",

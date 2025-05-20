@@ -22,10 +22,7 @@ const app = new Koa();
 const logger: Log = Log.getInstance().extend("service");
 const database = await Database.getInstance();
 
-await database.orm.connect().then(() => {
-  logger.info("Database has connected!");
-});
-
+logger.info("Database has connected!");
 
 PubSubWrapper.subscribe<NotifyReportReadyMessage>("notification-report-ready-sub", async (data: NotifyReportReadyMessage)=> {
   logger.info(`Received message to topic notification-report-ready-sub`);
@@ -55,13 +52,13 @@ app
     .use(new HelloController().routes())
     .use(new HelloController().allowedMethods());
 
-app.listen(3032, () => {
-  logger.info(`Auth server is running at ${3032}`);
+const PORT = process.env.PORT || 3032;
+app.listen(PORT, () => {
+  logger.info(`Auth server is running at ${PORT}`);
 });
 
-process.on('SIGINT', async () => {
-  logger.error('🛑 Gracefully shutting down...');
-  await PubSubWrapper.shutdown();
+process.on("SIGINT", async () => {
+  logger.error("🛑 Gracefully shutting down...");
   await database.orm.close();
   process.exit(0);
 });

@@ -9,9 +9,9 @@ env:
   PROJECT_ID: saas-452909
   REGION: europe-west4
   REGISTRY: europe-west4-docker.pkg.dev
-  IMAGE_NAME: notification-service
-  SERVICE_NAME: notification-service
-  IMAGE_REPO: europe-west4-docker.pkg.dev/saas-452909/notification-service
+  IMAGE_NAME: notifications-service
+  SERVICE_NAME: notifications-service
+  IMAGE_REPO: europe-west4-docker.pkg.dev/saas-452909/notifications-service
 
 permissions:
   contents: read

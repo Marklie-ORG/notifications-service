@@ -57,6 +57,7 @@ app.listen(PORT, () => {
   logger.info(`Auth server is running at ${PORT}`);
 });
 
+
 process.on("SIGINT", async () => {
   logger.error("🛑 Gracefully shutting down...");
   await database.orm.close();

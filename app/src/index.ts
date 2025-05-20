@@ -1,5 +1,6 @@
 import Koa from "koa";
 import koabodyparser from "koa-bodyparser";
+import "dotenv/config";
 import {HelloController} from "./lib/controllers/HelloController.js";
 import {
   AuthMiddleware,

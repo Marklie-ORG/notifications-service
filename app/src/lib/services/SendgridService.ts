@@ -36,25 +36,25 @@ export class SendGridService {
     }
   }
 
-    public async sendReportEmail(options: SendEmailOptions, pdfBuffer: string) {
-      try {
-        await sgMail.send({to: options.to,
-          from: options.from || this.defaultFrom,
-          subject: options.subject,
-          text: options.text || "",
-          replyTo: options.replyTo,
-          cc: options.cc,
-          bcc: options.bcc,
-          attachments: [{
-            content: pdfBuffer,
-            filename: 'facebook-report.pdf',
-            type: 'application/pdf',
-            disposition: 'attachment',
-          }]} as MailDataRequired);
+  public async sendReportEmail(options: SendEmailOptions, pdfBuffer: string) {
+    try {
+      await sgMail.send({to: options.to,
+        from: options.from || this.defaultFrom,
+        subject: options.subject,
+        text: options.text || "",
+        replyTo: options.replyTo,
+        cc: options.cc,
+        bcc: options.bcc,
+        attachments: [{
+          content: pdfBuffer,
+          filename: 'facebook-report.pdf',
+          type: 'application/pdf',
+          disposition: 'attachment',
+        }]} as MailDataRequired);
 
-        logger.info(
-            `Email report ready is sent to: ${Array.isArray(options.to) ? options.to.join(", ") : options.to}`,
-        );
+      logger.info(
+          `Email report ready is sent to: ${Array.isArray(options.to) ? options.to.join(", ") : options.to}`,
+      );
     } catch (error: any) {
         logger.error(
             "Error sending email:",
@@ -62,7 +62,7 @@ export class SendGridService {
         );
         throw error;
     }
-    }
+  }
 
   public async sendTemplateEmail({
     to,

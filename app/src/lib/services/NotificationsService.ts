@@ -5,8 +5,8 @@ import type {
   NotifyChangeEmailMessage, NotifyReportReadyMessage
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 import {Database, GCSWrapper, Log, Organization} from "marklie-ts-core";
-import {CommunicationChannel} from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
-
+// import {CommunicationChannel} from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
+import { CommunicationWrapper } from "../classes/CommunicationWrapper.js";
 const logger: Log = Log.getInstance().extend("notifications-util");
 const database = await Database.getInstance();
 
@@ -17,24 +17,11 @@ export class NotificationsService {
     data: NotificationDataMessage
   ): Promise<void> {
 
-    const communicationChannels = await database.em.find(
-      CommunicationChannel,
-      {
-        client: data.clientUuid,
-        active: true,
-      },
-    );
+    const gcsService = GCSWrapper.getInstance("marklie-client-reports")
+    const report = await gcsService.getReport(data.reportUrl);
 
-    for (const channel of communicationChannels) {
-      try {
-        await channel.send({});
-      } catch (err) {
-        logger.error(
-            `Failed to send report via channel ${channel.uuid}:`,
-            err,
-        );
-      }
-    }
+    const communicationWrapper = new CommunicationWrapper(data.clientUuid);
+    await communicationWrapper.sendReportToClient(report);
   }
 
   public static async sendReportIsReadyEmails(

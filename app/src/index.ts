@@ -37,8 +37,8 @@ PubSubWrapper.subscribe<NotificationDataMessage>("notification-send-report-sub",
   await NotificationsService.sendReportToClients(data)
 })
 
-PubSubWrapper.subscribe<NotifyChangeEmailMessage>("notification-send-change-email-sub-sub", async (data: NotifyChangeEmailMessage)=> {
-  logger.info(`Received message to topic notification-send-change-email-sub-sub`);
+PubSubWrapper.subscribe<NotifyChangeEmailMessage>("notification-send-change-email-sub", async (data: NotifyChangeEmailMessage)=> {
+  logger.info(`Received message to topic notification-send-change-email-sub`);
 
   await NotificationsService.sendChangeEmailEmail(data)
 })

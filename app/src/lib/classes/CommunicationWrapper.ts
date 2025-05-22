@@ -2,13 +2,14 @@ import { Database, OrganizationClient } from "marklie-ts-core";
 import { SendGridService } from "../services/SendgridService.js";
 import { SlackService } from "marklie-ts-core/dist/lib/services/SlackService.js";
 import { TokenService } from "marklie-ts-core";
-
+import { WhapiService } from "../services/WhapiService.js";
 const database = await Database.getInstance();
 
 export class CommunicationWrapper {
 
   private clientUuid: string;
   private sendGrid: SendGridService = new SendGridService("support@marklie.com");
+  private whapiService: WhapiService = new WhapiService();
 
   constructor(clientUuid: string) {
     this.clientUuid = clientUuid;
@@ -40,6 +41,13 @@ export class CommunicationWrapper {
         "report.pdf"
       );
     }
+
+    if (client.phoneNumbers && client.phoneNumbers.length > 0) {
+      client.phoneNumbers.forEach(async (phoneNumber: string) => {
+        await this.whapiService.sendReportWhatsapp(report, phoneNumber);
+      });
+    }
+
     
   }
   

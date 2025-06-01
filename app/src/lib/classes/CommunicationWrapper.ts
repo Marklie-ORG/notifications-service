@@ -23,13 +23,13 @@ export class CommunicationWrapper {
     }
 
     if (client.emails && client.emails.length > 0) {
-      client.emails.forEach(async (email: string) => {
+      for (const email of client.emails) {
         await this.sendGrid.sendReportEmail({
           to: email,
           subject: `Your report is ready!`,
           text: 'Please review the report!',
         }, report );
-      });
+      }
     }
 
     if (client.slackConversationId) {
@@ -43,9 +43,9 @@ export class CommunicationWrapper {
     }
 
     if (client.phoneNumbers && client.phoneNumbers.length > 0) {
-      client.phoneNumbers.forEach(async (phoneNumber: string) => {
+      for (const phoneNumber of client.phoneNumbers) {
         await this.whapiService.sendReportWhatsapp(report, phoneNumber);
-      });
+      }
     }
 
     

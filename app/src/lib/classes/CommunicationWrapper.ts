@@ -26,8 +26,8 @@ export class CommunicationWrapper {
       for (const email of client.emails) {
         await this.sendGrid.sendReportEmail({
           to: email,
-          subject: `Your report is ready!`,
-          text: 'Please review the report!',
+          subject: `Your Report Is Ready!`,
+          text: 'We’ve completed your report and it is now ready for review.',
         }, report );
       }
     }

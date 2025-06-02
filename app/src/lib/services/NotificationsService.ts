@@ -49,8 +49,8 @@ export class NotificationsService {
       try {
         await this.sendGrid.sendReportEmail({
           to: user.email,
-          subject: `Report for client is ready!`,
-          text: 'Please review the report <3',
+          subject: `Your Report Is Ready!`,
+          text: 'We’ve completed your report and it is now ready for review.',
         }, report )
       } catch (err) {
         logger.error(`Failed to notify user ${user.email}:`, err);

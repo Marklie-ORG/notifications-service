@@ -16,6 +16,7 @@ export class NotificationsService {
   public static async sendReportToClients(
     data: NotificationDataMessage
   ): Promise<void> {
+    console.log(data)
 
     const gcsService = GCSWrapper.getInstance("marklie-client-reports")
     const report = await gcsService.getReport(data.reportUrl);

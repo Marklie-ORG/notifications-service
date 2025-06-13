@@ -1,12 +1,11 @@
 import { SendGridService } from "./SendgridService.js";
 
 import type {
-  NotificationDataMessage,
   NotifyChangeEmailMessage, NotifyReportReadyMessage
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 import {Database, GCSWrapper, Log, Organization} from "marklie-ts-core";
-// import {CommunicationChannel} from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
 import { CommunicationWrapper } from "../classes/CommunicationWrapper.js";
+import {ActivityLog} from "marklie-ts-core/dist/lib/entities/ActivityLog.js";
 const logger: Log = Log.getInstance().extend("notifications-util");
 const database = await Database.getInstance();
 
@@ -14,15 +13,13 @@ export class NotificationsService {
   private static readonly sendGrid: SendGridService = new SendGridService("support@marklie.com");
 
   public static async sendReportToClients(
-    data: NotificationDataMessage
+    data: NotifyReportReadyMessage
   ): Promise<void> {
-    console.log(data)
-
     const gcsService = GCSWrapper.getInstance("marklie-client-reports")
     const report = await gcsService.getReport(data.reportUrl);
 
     const communicationWrapper = new CommunicationWrapper(data.clientUuid);
-    await communicationWrapper.sendReportToClient(report);
+    await communicationWrapper.sendReportToClient(report, data.reportUuid);
   }
 
   public static async sendReportIsReadyEmails(
@@ -53,6 +50,18 @@ export class NotificationsService {
           subject: `Your Report Is Ready!`,
           text: 'We’ve completed your report and it is now ready for review.',
         }, report )
+
+        const log = database.em.create(ActivityLog, {
+          organizationUuid: organization.uuid,
+          action: 'report_ready_sent',
+          targetType: 'report',
+          targetUuid: data.reportUuid,
+          clientUuid: data.clientUuid,
+          actor: 'system',
+          metadata: {email: user.email},
+        });
+
+        await database.em.persistAndFlush(log);
       } catch (err) {
         logger.error(`Failed to notify user ${user.email}:`, err);
       }

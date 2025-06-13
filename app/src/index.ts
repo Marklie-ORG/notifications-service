@@ -31,7 +31,7 @@ PubSubWrapper.subscribe<NotifyReportReadyMessage>("notification-report-ready-sub
   await NotificationsService.sendReportIsReadyEmails(data)
 })
 
-PubSubWrapper.subscribe<NotificationDataMessage>("notification-send-report-sub", async (data: NotificationDataMessage)=> {
+PubSubWrapper.subscribe<NotificationDataMessage>("notification-send-report-sub", async (data: NotifyReportReadyMessage)=> {
   logger.info(`Received message to topic notification-send-report-sub`);
 
   await NotificationsService.sendReportToClients(data)

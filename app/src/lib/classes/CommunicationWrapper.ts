@@ -16,7 +16,7 @@ export class CommunicationWrapper {
     this.clientUuid = clientUuid;
   }
 
-  public async sendReportToClient(report: string){
+  public async sendReportToClient(report: string, reportUuid: string) {
     const client: OrganizationClient = await database.em.findOne(OrganizationClient, this.clientUuid);
 
     if (!client) {
@@ -36,6 +36,7 @@ export class CommunicationWrapper {
           organizationUuid: client.organization.uuid,
           action: 'report_sent',
           targetType: 'report',
+          targetUuid: reportUuid,
           clientUuid: client.uuid,
           actor: 'system',
           metadata: {email: email}
@@ -58,6 +59,7 @@ export class CommunicationWrapper {
         organizationUuid: client.organization.uuid,
         action: 'report_sent',
         targetType: 'report',
+        targetUuid: reportUuid,
         clientUuid: client.uuid,
         actor: 'system',
         metadata: {slackConversationId: client.slackConversationId}
@@ -74,6 +76,7 @@ export class CommunicationWrapper {
           organizationUuid: client.organization.uuid,
           action: 'report_sent',
           targetType: 'report',
+          targetUuid: reportUuid,
           clientUuid: client.uuid,
           actor: 'system',
           metadata: {phoneNumber: client.phoneNumbers}

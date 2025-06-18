@@ -16,8 +16,8 @@ export class CommunicationWrapper {
     this.clientUuid = clientUuid;
   }
 
-  public async sendReportToClient(report: string, reportUuid: string) {
-    const client: OrganizationClient = await database.em.findOne(OrganizationClient, this.clientUuid);
+  public async sendReportToClient(report: string, reportUuid: string, organizationUuid: string) {
+    const client: OrganizationClient = await database.em.findOne(OrganizationClient, {uuid: this.clientUuid},);
 
     if (!client) {
       throw new Error("Client not found");
@@ -33,11 +33,11 @@ export class CommunicationWrapper {
         }, report );
 
         const log = database.em.create(ActivityLog, {
-          organizationUuid: client.organization.uuid,
+          organization: organizationUuid,
           action: 'report_sent',
           targetType: 'report',
           targetUuid: reportUuid,
-          clientUuid: client.uuid,
+          client: client.uuid,
           actor: 'system',
           metadata: {email: email}
         });
@@ -56,11 +56,11 @@ export class CommunicationWrapper {
       );
 
       const log = database.em.create(ActivityLog, {
-        organizationUuid: client.organization.uuid,
+        organization: organizationUuid,
         action: 'report_sent',
         targetType: 'report',
         targetUuid: reportUuid,
-        clientUuid: client.uuid,
+        client: client.uuid,
         actor: 'system',
         metadata: {slackConversationId: client.slackConversationId}
       });
@@ -73,11 +73,11 @@ export class CommunicationWrapper {
         await this.whapiService.sendReportWhatsapp(report, phoneNumber);
 
         const log = database.em.create(ActivityLog, {
-          organizationUuid: client.organization.uuid,
+          organization: organizationUuid,
           action: 'report_sent',
           targetType: 'report',
           targetUuid: reportUuid,
-          clientUuid: client.uuid,
+          client: client.uuid,
           actor: 'system',
           metadata: {phoneNumber: client.phoneNumbers}
         });

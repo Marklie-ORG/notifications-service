@@ -19,7 +19,7 @@ export class NotificationsService {
     const report = await gcsService.getReport(data.reportUrl);
 
     const communicationWrapper = new CommunicationWrapper(data.clientUuid);
-    await communicationWrapper.sendReportToClient(report, data.reportUuid);
+    await communicationWrapper.sendReportToClient(report, data.reportUuid, data.organizationUuid);
   }
 
   public static async sendReportIsReadyEmails(
@@ -52,11 +52,11 @@ export class NotificationsService {
         }, report )
 
         const log = database.em.create(ActivityLog, {
-          organizationUuid: organization.uuid,
+          organization: organization.uuid,
           action: 'report_ready_sent',
           targetType: 'report',
           targetUuid: data.reportUuid,
-          clientUuid: data.clientUuid,
+          client: data.clientUuid,
           actor: 'system',
           metadata: {email: user.email},
         });

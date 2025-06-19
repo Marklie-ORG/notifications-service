@@ -7,7 +7,7 @@ export class WhapiService {
 
   constructor() {}
 
-  public async sendReportWhatsapp(reportBase64: string, phoneNumber: string): Promise<void> {
+  public async sendReportWhatsapp(reportBase64: string, phoneNumber: string, message: string): Promise<void> {
 
     try {
         const media = `data:application/pdf;name=file.pdf;base64,${reportBase64}`;
@@ -18,7 +18,7 @@ export class WhapiService {
             media: media,
             mime_type: "application/pdf",
             filename: "report.pdf",
-            caption: "Here's your report!",
+            caption: message,
         })
 
         logger.info(

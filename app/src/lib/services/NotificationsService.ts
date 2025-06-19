@@ -2,7 +2,7 @@ import { SendGridService } from "./SendgridService.js";
 
 import type {
   NotificationDataMessage,
-  NotifyChangeEmailMessage, NotifyReportReadyMessage
+  NotifyChangeEmailMessage, NotifyReportReadyMessage, NotifyReportToClientMessage
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 import {Database, GCSWrapper, Log, Organization} from "marklie-ts-core";
 // import {CommunicationChannel} from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
@@ -14,14 +14,14 @@ export class NotificationsService {
   private static readonly sendGrid: SendGridService = new SendGridService("support@marklie.com");
 
   public static async sendReportToClients(
-    data: NotificationDataMessage
+    data: NotifyReportToClientMessage
   ): Promise<void> {
 
     const gcsService = GCSWrapper.getInstance("marklie-client-reports")
     const report = await gcsService.getReport(data.reportUrl);
 
     const communicationWrapper = new CommunicationWrapper(data.clientUuid);
-    await communicationWrapper.sendReportToClient(report);
+    await communicationWrapper.sendReportToClient(report, data.messages);
   }
 
   public static async sendReportIsReadyEmails(

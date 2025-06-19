@@ -15,7 +15,8 @@ import {NotificationsService} from "./lib/services/NotificationsService.js";
 import type {
   NotificationDataMessage,
   NotifyReportReadyMessage,
-  NotifyChangeEmailMessage
+  NotifyChangeEmailMessage,
+  NotifyReportToClientMessage
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 
 const app = new Koa();
@@ -31,7 +32,7 @@ PubSubWrapper.subscribe<NotifyReportReadyMessage>("notification-report-ready-sub
   await NotificationsService.sendReportIsReadyEmails(data)
 })
 
-PubSubWrapper.subscribe<NotificationDataMessage>("notification-send-report-sub", async (data: NotificationDataMessage)=> {
+PubSubWrapper.subscribe<NotifyReportToClientMessage>("notification-send-report-sub", async (data: NotifyReportToClientMessage)=> {
   logger.info(`Received message to topic notification-send-report-sub`);
 
   await NotificationsService.sendReportToClients(data)

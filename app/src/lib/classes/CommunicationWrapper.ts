@@ -15,8 +15,17 @@ export class CommunicationWrapper {
     this.clientUuid = clientUuid;
   }
 
-  public async sendReportToClient(report: string){
+  public async sendReportToClient(report: string, messages: {
+    whatsapp: string,
+    slack: string,
+    email: {
+      title: string,
+      body: string,
+    }
+  }){
     const client: OrganizationClient = await database.em.findOne(OrganizationClient, this.clientUuid);
+
+    console.log(client)
 
     if (!client) {
       throw new Error("Client not found");
@@ -26,8 +35,8 @@ export class CommunicationWrapper {
       client.emails.forEach(async (email: string) => {
         await this.sendGrid.sendReportEmail({
           to: email,
-          subject: `Your report is ready!`,
-          text: 'Please review the report!',
+          subject: messages.email.title,
+          text: messages.email.body,
         }, report );
       });
     }
@@ -36,7 +45,7 @@ export class CommunicationWrapper {
       const slackService = new SlackService(new TokenService());
       await slackService.sendSlackMessageWithFile(
         this.clientUuid,
-        "Your report is ready!",
+        messages.slack,
         Buffer.from(report, "base64"),
         "report.pdf"
       );
@@ -44,7 +53,7 @@ export class CommunicationWrapper {
 
     if (client.phoneNumbers && client.phoneNumbers.length > 0) {
       client.phoneNumbers.forEach(async (phoneNumber: string) => {
-        await this.whapiService.sendReportWhatsapp(report, phoneNumber);
+        await this.whapiService.sendReportWhatsapp(report, phoneNumber, messages.whatsapp);
       });
     }
 

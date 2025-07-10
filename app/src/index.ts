@@ -34,7 +34,7 @@ PubSubWrapper.subscribe<NotifyReportReadyMessage>("notification-report-ready-sub
 PubSubWrapper.subscribe<NotificationDataMessage>("notification-send-report-sub", async (data: NotifyReportReadyMessage)=> {
   logger.info(`Received message to topic notification-send-report-sub`);
 
-  await NotificationsService.sendReportToClients(data)
+    await NotificationsService.sendReportToClients(data)
 })
 
 PubSubWrapper.subscribe<NotifyChangeEmailMessage>("notification-send-change-email-sub", async (data: NotifyChangeEmailMessage)=> {
@@ -64,3 +64,12 @@ process.on("SIGINT", async () => {
   await database.orm.close();
   process.exit(0);
 });
+
+
+
+await NotificationsService.sendReportToClients({
+  reportUrl: 'gs://marklie-client-reports/report/c5b300eb-ab4d-4db6-bae7-c81610dd9f5a-facebook-report-last_7d-2025-06-18.pdf',
+  clientUuid: 'c5b300eb-ab4d-4db6-bae7-c81610dd9f5a',
+  organizationUuid: '2bc96d98-654e-41b0-a13f-22ed452d9f47',
+  reportUuid: '72d21431-a8ff-42c3-b531-9281c4015dcb'
+})

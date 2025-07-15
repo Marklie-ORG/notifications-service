@@ -1,93 +1,38 @@
-import { Database, OrganizationClient } from "marklie-ts-core";
-import { SendGridService } from "../services/SendgridService.js";
-import { SlackService } from "marklie-ts-core/dist/lib/services/SlackService.js";
-import { TokenService } from "marklie-ts-core";
-import { WhapiService } from "../services/WhapiService.js";
-import {ActivityLog} from "marklie-ts-core/dist/lib/entities/ActivityLog.js";
+import { Database, Log } from "marklie-ts-core";
+import { CommunicationChannel } from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
+
+const logger: Log = Log.getInstance().extend("communication-wrapper");
 const database = await Database.getInstance();
 
 export class CommunicationWrapper {
+  constructor(private clientUuid: string) {}
 
-  private clientUuid: string;
-  private sendGrid: SendGridService = new SendGridService("support@marklie.com");
-  private whapiService: WhapiService = new WhapiService();
+  public async sendReportToClient(
+    report: string,
+    reportUuid: string,
+    organizationUuid: string,
+  ) {
+    const channels = await database.em.find(CommunicationChannel, {
+      client: this.clientUuid,
+    });
 
-  constructor(clientUuid: string) {
-    this.clientUuid = clientUuid;
-  }
-
-  public async sendReportToClient(report: string, reportUuid: string, organizationUuid: string) {
-    const client: OrganizationClient = await database.em.findOne(OrganizationClient, {uuid: this.clientUuid},);
-
-    if (!client) {
-      throw new Error("Client not found");
+    if (!channels) {
+      throw new Error("Channels not found");
     }
 
-    if (client.emails && client.emails.length > 0) {
-      for (const email of client.emails) {
+    const context = { reportUuid, organizationUuid };
 
-        await this.sendGrid.sendReportEmail({
-          to: email,
-          subject: `Your Report Is Ready!`,
-          text: 'We’ve completed your report and it is now ready for review.',
-        }, report );
+    for (const channel of channels) {
+      if (!channel.active) continue;
 
-        const log = database.em.create(ActivityLog, {
-          organization: organizationUuid,
-          action: 'report_sent',
-          targetType: 'report',
-          targetUuid: reportUuid,
-          client: client.uuid,
-          actor: 'system',
-          metadata: {email: email}
-        });
-
-        await database.em.persistAndFlush(log);
+      try {
+        await channel.send(report, context);
+      } catch (err) {
+        logger.error(
+          `Failed to send report via ${channel.constructor.name}:`,
+          err,
+        );
       }
     }
-
-    if (client.slackConversationId) {
-      const slackService = new SlackService(new TokenService());
-      await slackService.sendSlackMessageWithFile(
-        this.clientUuid,
-        "Your report is ready!",
-        Buffer.from(report, "base64"),
-        "report.pdf"
-      );
-
-      const log = database.em.create(ActivityLog, {
-        organization: organizationUuid,
-        action: 'report_sent',
-        targetType: 'report',
-        targetUuid: reportUuid,
-        client: client.uuid,
-        actor: 'system',
-        metadata: {slackConversationId: client.slackConversationId}
-      });
-
-      await database.em.persistAndFlush(log);
-    }
-
-    if (client.phoneNumbers && client.phoneNumbers.length > 0) {
-      for (const phoneNumber of client.phoneNumbers) {
-        await this.whapiService.sendReportWhatsapp(report, phoneNumber);
-
-        const log = database.em.create(ActivityLog, {
-          organization: organizationUuid,
-          action: 'report_sent',
-          targetType: 'report',
-          targetUuid: reportUuid,
-          client: client.uuid,
-          actor: 'system',
-          metadata: {phoneNumber: client.phoneNumbers}
-        });
-
-        await database.em.persistAndFlush(log);
-      }
-    }
-
-    
   }
-  
-
 }

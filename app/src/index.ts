@@ -1,7 +1,6 @@
 import Koa from "koa";
 import koabodyparser from "koa-bodyparser";
 import "dotenv/config";
-import { HelloController } from "./lib/controllers/HelloController.js";
 import {
   AuthMiddleware,
   CookiesMiddleware,
@@ -57,9 +56,6 @@ app.use(AuthMiddleware());
 app.use(ErrorMiddleware());
 app.use(ValidationMiddleware());
 app.use(koabodyparser());
-app
-  .use(new HelloController().routes())
-  .use(new HelloController().allowedMethods());
 
 const PORT = process.env.PORT || 3032;
 app.listen(PORT, () => {

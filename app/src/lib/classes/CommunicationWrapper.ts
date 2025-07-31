@@ -22,13 +22,13 @@ export class CommunicationWrapper {
 
     const context = { reportUuid, organizationUuid };
 
-    const dbReport = await database.em.findOne(Report, {uuid: reportUuid});
+    const dbReport = await database.em.findOne(Report, {uuid: reportUuid}) as Report;
 
     for (const channel of channels) {
       if (!channel.active) continue;
 
       try {
-        await channel.send(report, context, dbReport!.metadata!.messages);
+        await channel.send(report, context, dbReport);
       } catch (err) {
         logger.error(
           `Failed to send report via ${channel.constructor.name}:`,

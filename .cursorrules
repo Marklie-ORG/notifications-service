@@ -1,0 +1,13 @@
+# notifications-service Rules
+
+- Purpose: Notification delivery and related entities. Node/Express with pnpm; source under `app/src`.
+- Commands:
+  - Install: `cd app && corepack enable && pnpm i`
+  - Dev: `cd app && pnpm watch`
+  - Build: `cd app && pnpm build:all`
+- Conventions:
+  - Services in `lib/services`, entities/schemas in their respective dirs, config in `lib/config`.
+  - Use shared wrappers from `markly-ts-core` (e.g., BullMQ, Logger, Config) when applicable.
+  - Keep diffs minimal; maintain strong typing.
+- Cross-service:
+  - For new events/contracts, first add types to `markly-ts-core` and update all producers/consumers. 

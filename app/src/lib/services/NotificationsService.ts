@@ -48,20 +48,18 @@ export class NotificationsService {
     }
 
     try {
-      const report = await this.gcs.getReport(data.reportUrl);
       const members = organization.members.getItems();
 
       for (const member of members) {
         const user = member.user;
 
         try {
-          await sendGridService.sendReportEmail(
+          await sendGridService.sendEmail(
             {
               to: user.email,
               subject: "Your Report Is Ready!",
-              text: "We’ve completed your report and it is now ready for review.",
-            },
-            report,
+              text: "The report has been generated, you can review it here: https://marklie.com/reports-database",
+            }
           );
 
           const log = database.em.create(ActivityLog, {

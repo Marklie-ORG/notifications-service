@@ -30,10 +30,12 @@ export class CommunicationWrapper {
       try {
         await channel.send(report, context, dbReport);
       } catch (err) {
-        logger.error(
-          `Failed to send report via ${channel.constructor.name}:`,
-          err,
-        );
+        logger.error(`Failed to send report via ${channel.constructor.name}`, {
+          error: {
+            message: (err as Error)?.message,
+            stack: (err as Error)?.stack,
+          },
+        });
       }
     }
   }

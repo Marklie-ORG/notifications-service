@@ -19,7 +19,7 @@
     "@sendgrid/mail": "^8.1.5",
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
-    "marklie-ts-core": "1.4.49",
+    "marklie-ts-core": "1.4.52",
     "zod": "^4.0.5"
   },
   "devDependencies": {
@@ -30,7 +30,7 @@
     "@types/koa-bodyparser": "^4.3.12",
     "@types/koa-router": "^7.4.4",
     "@types/node": "^22.10.10",
-    "koa": "^2.13.4",
+    "koa": "3.0.1",
     "koa-body": "^6.0.1",
     "koa-bodyparser": "^4.3.0",
     "koa-json": "^2.0.2",

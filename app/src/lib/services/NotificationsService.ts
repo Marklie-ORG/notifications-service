@@ -61,22 +61,21 @@ export class NotificationsService {
               text: "The report has been generated, you can review it here: https://marklie.com/reports-database",
             }
           );
-
-          const log = database.em.create(ActivityLog, {
-            organization: organization.uuid,
-            action: "report_ready_sent",
-            targetType: "report",
-            targetUuid: data.reportUuid,
-            client: data.clientUuid,
-            actor: "system",
-            metadata: { email: user.email },
-          });
-
-          await database.em.persistAndFlush(log);
         } catch (emailError) {
           logger.error(`Failed to notify user ${user.email}:`, emailError);
         }
       }
+
+      const log = database.em.create(ActivityLog, {
+        organization: organization.uuid,
+        action: "report_ready_sent",
+        targetType: "report",
+        targetUuid: data.reportUuid,
+        client: data.clientUuid,
+        actor: "system",
+      });
+
+      await database.em.persistAndFlush(log);
     } catch (reportError) {
       logger.error(
         "Failed to fetch report for email notifications:",

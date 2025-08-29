@@ -79,7 +79,7 @@ export class NotificationsService {
     } catch (reportError) {
       logger.error(
         "Failed to fetch report for email notifications:",
-        reportError,
+        JSON.stringify(reportError),
       );
     }
   }

@@ -1,4 +1,10 @@
-import { Database, Log, Report } from "marklie-ts-core";
+import {
+  Database,
+  ErrorCode,
+  Log,
+  MarklieError,
+  Report,
+} from "marklie-ts-core";
 import { CommunicationChannel } from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
 
 const logger: Log = Log.getInstance().extend("communication-wrapper");
@@ -17,12 +23,14 @@ export class CommunicationWrapper {
     });
 
     if (!channels) {
-      throw new Error("Channels not found");
+      throw new MarklieError("Channels not found", ErrorCode.NOT_FOUND);
     }
 
     const context = { reportUuid, organizationUuid };
 
-    const dbReport = await database.em.findOne(Report, {uuid: reportUuid}) as Report;
+    const dbReport = (await database.em.findOne(Report, {
+      uuid: reportUuid,
+    })) as Report;
 
     for (const channel of channels) {
       if (!channel.active) continue;
@@ -30,7 +38,7 @@ export class CommunicationWrapper {
       try {
         await channel.send(report, context, dbReport);
       } catch (err) {
-        logger.error(`Failed to send report via ${channel.constructor.name}`, {
+        logger.error(`Failed to send report via ${channel.constructor.name} for client ${this.clientUuid}`, {
           error: {
             message: (err as Error)?.message,
             stack: (err as Error)?.stack,

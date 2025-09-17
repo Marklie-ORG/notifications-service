@@ -16,7 +16,6 @@ import type {
   NotifyReportReadyMessage,
   NotifyChangeEmailMessage,
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
-import {CommunicationWrapper} from "./lib/classes/CommunicationWrapper.js";
 
 const app = new Koa();
 

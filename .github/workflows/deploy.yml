@@ -58,11 +58,6 @@ jobs:
           region: ${{ env.REGION }}
           env_vars: |
             ENVIRONMENT=staging
-            REDIS_HOST=${{ secrets.STAGING_REDIS_HOST }}
-            ACCESS_TOKEN_SECRET=${{ secrets.STAGING_ACCESS_TOKEN_SECRET }}
-            REFRESH_TOKEN_SECRET=${{ secrets.STAGING_REFRESH_TOKEN_SECRET }}
-            GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
-            ORG_TOKEN_SECRET_KEY=${{ secrets.STAGING_ORG_TOKEN_SECRET_KEY }}
 
       - name: Output staging service URL
         run: echo "✅ Staging deployed to ${{ steps.deploy-staging.outputs.url }}"

@@ -37,17 +37,10 @@ export class CommunicationWrapper {
         await channel.send(report, context, dbReport);
       } catch (err: any) {
         console.error(
-            `Failed to send report via ${channel.constructor.name} for client ${this.clientUuid}`,
-            {
-              error: {
-                message: err?.message,
-                stack: err?.stack,
-                status: err?.response?.status,
-                statusText: err?.response?.statusText,
-                body: err?.response?.data || err?.response?.body,
-              },
-            },
+            `Failed to send report via ${channel.constructor.name} for client ${this.clientUuid}`
+
         );
+        console.error(err)
       }
     }
   }

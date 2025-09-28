@@ -69,10 +69,3 @@ process.on("SIGINT", async () => {
   await database.orm.close();
   process.exit(0);
 });
-
-await NotificationsService.sendReportToClients({
-    reportUrl: "gs://marklie-client-reports/report/0383e2ad-bee8-4253-afa9-2ae543d2195b-facebook-report-last_7d-2025-09-25.pdf",
-    clientUuid: "0383e2ad-bee8-4253-afa9-2ae543d2195b",
-    organizationUuid: "f0637dcb-b82e-423b-967a-a52eff651d28",
-    reportUuid: "cc3cf39a-c4b8-484d-81de-388d407e6afa"
-})

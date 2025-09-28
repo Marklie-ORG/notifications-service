@@ -1,13 +1,11 @@
 import {
   Database,
   ErrorCode,
-  Log,
   MarklieError,
   Report,
 } from "marklie-ts-core";
 import { CommunicationChannel } from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
 
-const logger: Log = Log.getInstance().extend("communication-wrapper");
 const database = await Database.getInstance();
 
 export class CommunicationWrapper {
@@ -37,13 +35,19 @@ export class CommunicationWrapper {
 
       try {
         await channel.send(report, context, dbReport);
-      } catch (err) {
-        logger.error(`Failed to send report via ${channel.constructor.name} for client ${this.clientUuid}`, {
-          error: {
-            message: (err as Error)?.message,
-            stack: (err as Error)?.stack,
-          },
-        });
+      } catch (err: any) {
+        console.error(
+            `Failed to send report via ${channel.constructor.name} for client ${this.clientUuid}`,
+            {
+              error: {
+                message: err?.message,
+                stack: err?.stack,
+                status: err?.response?.status,
+                statusText: err?.response?.statusText,
+                body: err?.response?.data || err?.response?.body,
+              },
+            },
+        );
       }
     }
   }

@@ -1,6 +1,7 @@
 import type {
   NotifyChangeEmailMessage,
   NotifyReportReadyMessage,
+  NotifyClientAccessTokenMessage
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 import { Database, GCSWrapper, Log, Organization } from "marklie-ts-core";
 import { CommunicationWrapper } from "../classes/CommunicationWrapper.js";
@@ -91,7 +92,7 @@ export class NotificationsService {
       await sendGridService.sendEmail({
         to: data.email,
         subject: "Marklie | Email Confirmation",
-        text: `Please confirm your email change: http://localhost:4200/verify-email-change?token=${data.token}`,
+        text: `Please confirm your email change: https://marklie.com/verify-email-change?token=${data.token}`,
       });
     } catch (err) {
       logger.error(
@@ -100,4 +101,24 @@ export class NotificationsService {
       );
     }
   }
+
+  public static async sendClientAccessTokenEmail(
+    data: NotifyClientAccessTokenMessage,
+  ): Promise<void> {
+    try {
+      await sendGridService.sendEmail({
+        to: data.email,
+        subject: "Marklie | Access to reports",
+        text: `<p>Open Ad Performance reports: <a href="https://marklie.com/client-database?token=${data.token}">Link</a></p>`,
+        html: `<p>Open Ad Performance reports: <a href="https://marklie.com/client-database?token=${data.token}">Link</a></p>`,
+        
+      });
+    } catch (err) {
+      logger.error(
+        `Failed to send client access token email notification to ${data.email}:`,
+        err,
+      );
+    }
+  }
+
 }

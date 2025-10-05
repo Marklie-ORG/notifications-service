@@ -15,6 +15,8 @@ import { NotificationsService } from "./lib/services/NotificationsService.js";
 import type {
   NotifyReportReadyMessage,
   NotifyChangeEmailMessage,
+  NotifyClientAccessTokenMessage,
+  NotifyClientAccessRequestedMessage,
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 
 const app = new Koa();
@@ -48,6 +50,24 @@ PubSubWrapper.subscribe<NotifyChangeEmailMessage>(
     logger.info(`Received message to topic notification-send-change-email-sub`);
 
     await NotificationsService.sendChangeEmailEmail(data);
+  },
+);
+
+PubSubWrapper.subscribe<NotifyClientAccessTokenMessage>(
+  "notification-send-client-access-email-sub",
+  async (data: NotifyClientAccessTokenMessage) => {
+    logger.info(`Received message to topic notification-send-client-access-email-sub`);
+
+    await NotificationsService.sendClientAccessTokenEmail(data);
+  },
+);
+
+PubSubWrapper.subscribe<NotifyClientAccessRequestedMessage>(
+  "notification-client-access-requested-sub",
+  async (data: NotifyClientAccessRequestedMessage) => {
+    logger.info(`Received message to topic notification-client-access-requested-sub`);
+
+    await NotificationsService.sendClientAccessRequestedEmail(data);
   },
 );
 

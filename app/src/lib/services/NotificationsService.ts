@@ -1,6 +1,8 @@
 import type {
   NotifyChangeEmailMessage,
   NotifyReportReadyMessage,
+  NotifyClientAccessTokenMessage,
+  NotifyClientAccessRequestedMessage,
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 import { Database, GCSWrapper, Log, Organization } from "marklie-ts-core";
 import { CommunicationWrapper } from "../classes/CommunicationWrapper.js";
@@ -91,7 +93,7 @@ export class NotificationsService {
       await sendGridService.sendEmail({
         to: data.email,
         subject: "Marklie | Email Confirmation",
-        text: `Please confirm your email change: http://localhost:4200/verify-email-change?token=${data.token}`,
+        text: `Please confirm your email change: https://marklie.com/verify-email-change?token=${data.token}`,
       });
     } catch (err) {
       logger.error(
@@ -100,4 +102,46 @@ export class NotificationsService {
       );
     }
   }
+
+  public static async sendClientAccessTokenEmail(
+    data: NotifyClientAccessTokenMessage,
+  ): Promise<void> {
+    try {
+      await sendGridService.sendEmail({
+        to: data.email,
+        subject: "Marklie | Access to reports",
+        text: `<p>Open Ad Performance reports: <a href="https://marklie.com/client-database?token=${data.token}">Link</a></p>`,
+        html: `<p>Open Ad Performance reports: <a href="https://marklie.com/client-database?token=${data.token}">Link</a></p>`,
+        
+      });
+    } catch (err) {
+      logger.error(
+        `Failed to send client access token email notification to ${data.email}:`,
+        err,
+      );
+    }
+  }
+
+  public static async sendClientAccessRequestedEmail(
+    data: NotifyClientAccessRequestedMessage,
+  ): Promise<void> {
+    const subject = "Marklie | Client access requested";
+    const textBody = `${data.requesterEmail} requested access to ${data.clientName} reports.`;
+    const htmlBody = `<p><strong>${data.requesterEmail}</strong> requested access to reports for <strong>${data.clientName}</strong>.</p>`;
+
+    try {
+      await sendGridService.sendEmail({
+        to: data.recipientEmail,
+        subject,
+        text: `${textBody}\nManage requests at https://marklie.com/access-requests`,
+        html: `${htmlBody}<p><a href="https://marklie.com/access-requests">Review requests in Marklie</a></p>`,
+      });
+    } catch (err) {
+      logger.error(
+        `Failed to send client access requested email to ${data.recipientEmail}:`,
+        err,
+      );
+    }
+  }
+
 }

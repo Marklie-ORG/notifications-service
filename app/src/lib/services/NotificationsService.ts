@@ -1,7 +1,8 @@
 import type {
   NotifyChangeEmailMessage,
   NotifyReportReadyMessage,
-  NotifyClientAccessTokenMessage
+  NotifyClientAccessTokenMessage,
+  NotifyClientAccessRequestedMessage,
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
 import { Database, GCSWrapper, Log, Organization } from "marklie-ts-core";
 import { CommunicationWrapper } from "../classes/CommunicationWrapper.js";
@@ -116,6 +117,28 @@ export class NotificationsService {
     } catch (err) {
       logger.error(
         `Failed to send client access token email notification to ${data.email}:`,
+        err,
+      );
+    }
+  }
+
+  public static async sendClientAccessRequestedEmail(
+    data: NotifyClientAccessRequestedMessage,
+  ): Promise<void> {
+    const subject = "Marklie | Client access requested";
+    const textBody = `${data.requesterEmail} requested access to ${data.clientName} reports.`;
+    const htmlBody = `<p><strong>${data.requesterEmail}</strong> requested access to reports for <strong>${data.clientName}</strong>.</p>`;
+
+    try {
+      await sendGridService.sendEmail({
+        to: data.recipientEmail,
+        subject,
+        text: `${textBody}\nManage requests at https://marklie.com/access-requests`,
+        html: `${htmlBody}<p><a href="https://marklie.com/access-requests">Review requests in Marklie</a></p>`,
+      });
+    } catch (err) {
+      logger.error(
+        `Failed to send client access requested email to ${data.recipientEmail}:`,
         err,
       );
     }

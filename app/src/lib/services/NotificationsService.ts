@@ -110,9 +110,7 @@ export class NotificationsService {
       await sendGridService.sendEmail({
         to: data.email,
         subject: "Marklie | Access to reports",
-        text: `<p>Open Ad Performance reports: <a href="https://marklie.com/client-database?token=${data.token}">Link</a></p>`,
-        html: `<p>Open Ad Performance reports: <a href="https://marklie.com/client-database?token=${data.token}">Link</a></p>`,
-        
+        html: `<p>Open Ad Performance reports: <a href="https://marklie.com/activate-client-access?token=${data.token}">Link</a></p>`,
       });
     } catch (err) {
       logger.error(

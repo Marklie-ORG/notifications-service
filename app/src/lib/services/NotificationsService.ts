@@ -4,10 +4,11 @@ import type {
   NotifyClientAccessTokenMessage,
   NotifyClientAccessRequestedMessage,
 } from "marklie-ts-core/dist/lib/interfaces/PubSubInterfaces.js";
-import { Database, GCSWrapper, Log, Organization } from "marklie-ts-core";
+import { Database, GCSWrapper, Log, Organization, Report } from "marklie-ts-core";
 import { CommunicationWrapper } from "../classes/CommunicationWrapper.js";
 import { ActivityLog } from "marklie-ts-core/dist/lib/entities/ActivityLog.js";
 import { sendGridService } from "marklie-ts-core/dist/lib/services/SendgridService.js";
+import { reviewReportTemplate } from "../email-templates/review-report.js";
 
 const logger: Log = Log.getInstance().extend("notifications-service");
 const database = await Database.getInstance();
@@ -49,6 +50,12 @@ export class NotificationsService {
       return;
     }
 
+    const report = await database.em.findOne(
+      Report,
+      { uuid: data.reportUuid },
+      { populate: ["client"] },
+    );
+
     try {
       const members = organization.members.getItems();
 
@@ -60,7 +67,7 @@ export class NotificationsService {
             {
               to: user.email,
               subject: "Your Report Is Ready!",
-              text: "The report has been generated, you can review it here: https://marklie.com/reports-database",
+              html: reviewReportTemplate(report?.client?.name || "", `https://marklie.com/reports-database`, new Date().getFullYear().toString()),
             }
           );
         } catch (emailError) {

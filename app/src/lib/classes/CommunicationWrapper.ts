@@ -6,7 +6,6 @@ import {
 } from "marklie-ts-core";
 import { CommunicationChannel } from "marklie-ts-core/dist/lib/entities/ClientCommunicationChannel.js";
 
-const database = await Database.getInstance();
 
 export class CommunicationWrapper {
   constructor(private clientUuid: string) {}
@@ -16,6 +15,7 @@ export class CommunicationWrapper {
     reportUuid: string,
     organizationUuid: string,
   ) {
+    const database = await Database.getInstance();
     const channels = await database.em.find(CommunicationChannel, {
       client: this.clientUuid,
     });

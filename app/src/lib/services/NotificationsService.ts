@@ -11,7 +11,6 @@ import { sendGridService } from "marklie-ts-core/dist/lib/services/SendgridServi
 import { reviewReportTemplate } from "../email-templates/review-report.js";
 
 const logger: Log = Log.getInstance().extend("notifications-service");
-const database = await Database.getInstance();
 
 export class NotificationsService {
   private static readonly gcs = GCSWrapper.getInstance(
@@ -37,6 +36,7 @@ export class NotificationsService {
   public static async sendReportIsReadyEmails(
     data: NotifyReportReadyMessage,
   ): Promise<void> {
+    const database = await Database.getInstance();
     const organization = await database.em.findOne(
       Organization,
       { uuid: data.organizationUuid },
